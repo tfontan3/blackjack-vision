@@ -59,7 +59,7 @@ def main():
 def scan():
     # Wait for hit stand buttons then scan cards, or restart the app if new game
     print("Waiting for HIT/STAND Buttons")
-    counter = 0
+    counter = 0;
     stand_txt = ""
     while stand_nickname not in stand_txt:
         counter += 1;
@@ -82,21 +82,20 @@ def scan():
         stand_img = Image.frombytes('RGB', (sct.width, sct.height), sct.image)
         stand_nparr = np.array(stand_img)
         stand_nparr = 255 - stand_nparr
-        stand_txt = ""
         stand_gry = cv2.cvtColor(stand_nparr, cv2.COLOR_BGR2GRAY)
         stand_thr = cv2.adaptiveThreshold( stand_gry, 255, cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY_INV, 11, 4)
         stand_txt = pytesseract.image_to_string( stand_thr)
-        # cv2.imshow('test',  stand_thr)
         if cv2.waitKey(2) & 0xFF == ord('q'):
             break
 
-    counter = 0;
     player_txt = "";
     dealer_txt = "";
     final_dealer_hand = "";
     final_player_hand = "";
     print("Scan")
     while True:
+        counter +=1;
+        
         #Scan Dealer Hand
         sct = mss()
         sct.get_pixels(opp)
@@ -116,7 +115,6 @@ def scan():
         player_thresh = cv2.bitwise_not(player_thresh)
         player_double = cv2.resize(player_thresh, None, fx=2, fy=2)
 
-        counter +=1;
         ## Dealer image capture
         if ((counter%100)==0):
             dealer_txt = pytesseract.image_to_string(double, config="--psm 7 digits")
@@ -129,6 +127,7 @@ def scan():
             if cv2.waitKey(2) & 0xFF == ord('q'):
                 break
         
+        ## Create a list of all the hands computer vision sees for dealer and player, then find the most common result, which should be the actual hand
         if player_txt and not player_txt.isspace():
             player_list = []
             dealer_list = []
